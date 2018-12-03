@@ -6,6 +6,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import FollowGrid from './FollowGrid'
 import PostList from '../Post/PostList'
+import { connect } from 'react-redux'
 
 class ProfileTabs extends Component {
     state = {
@@ -36,7 +37,7 @@ class ProfileTabs extends Component {
                     <Tab label="Followers" />
                 </Tabs>
                 </AppBar>
-            {this.state.tab === 0 && <TabContainer><PostList /></TabContainer>}
+            {this.state.tab === 0 && <TabContainer><PostList posts={this.props.posts} /></TabContainer>}
             {this.state.tab === 1 && <TabContainer><FollowGrid /></TabContainer>}
             {this.state.tab === 2 && <TabContainer><FollowGrid /></TabContainer>}
         </div>)
@@ -55,4 +56,8 @@ TabContainer.propTypes = {
   children: PropTypes.node.isRequired
 }
 
-export default ProfileTabs
+const mapStateFromProps = state => ({
+  posts: state.post.currentPosts
+});
+
+export default  connect(mapStateFromProps,null)(ProfileTabs)

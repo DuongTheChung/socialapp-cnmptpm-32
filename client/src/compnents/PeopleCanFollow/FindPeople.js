@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography'
 import { Link } from 'react-router-dom'
 import Snackbar from '@material-ui/core/Snackbar'
 import ViewIcon from '@material-ui/icons/Visibility'
-import ImageAva from '../../assets/images/ava2.jpg'
+import { connect } from 'react-redux'
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -41,45 +41,34 @@ const styles = theme => ({
 })
 class FindPeople extends Component {
   render() {
-    const {classes} = this.props
+    const {classes , users} = this.props
     return (<div>
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
           Who to follow
         </Typography>
         <List>
-            <ListItem>
-                <ListItemAvatar className={classes.avatar}>
-                    <Avatar src={ImageAva}/>
-                </ListItemAvatar>
-                <ListItemText primary="People"/>
-                <ListItemSecondaryAction className={classes.follow}>
+        {users.map((item, i) => {
+              return <span key={i}>
+                <ListItem>
+                  <ListItemAvatar className={classes.avatar}>
+                      <Avatar src={item.photo}/>
+                  </ListItemAvatar>
+                  <ListItemText primary={item.name}/>
+                  <ListItemSecondaryAction className={classes.follow}>
                     <Link to="">
                       <IconButton variant="raised" color="secondary" className={classes.viewButton}>
                         <ViewIcon/>
                       </IconButton>
                     </Link>
-                <Button aria-label="Follow" variant="raised" color="primary">
-                    Follow
-                </Button>
-                </ListItemSecondaryAction>
-            </ListItem>
-            <ListItem>
-                <ListItemAvatar className={classes.avatar}>
-                    <Avatar src={ImageAva}/>
-                </ListItemAvatar>
-                <ListItemText primary="People"/>
-                <ListItemSecondaryAction className={classes.follow}>
-                    <Link to="">
-                      <IconButton variant="raised" color="secondary" className={classes.viewButton}>
-                        <ViewIcon/>
-                      </IconButton>
-                    </Link>
-                <Button aria-label="Follow" variant="raised" color="primary">
-                    Follow
-                </Button>
-                </ListItemSecondaryAction>
-            </ListItem>
+                    <Button aria-label="Follow" variant="raised" color="primary" >
+                      Follow
+                    </Button>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </span>
+            })
+          }
         </List>
       </Paper>
       <Snackbar
@@ -98,4 +87,9 @@ FindPeople.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(FindPeople)
+const mapStateFromProps = state => ({
+  users: state.user.currentUsers
+});
+
+
+export default  connect(mapStateFromProps,null)(withStyles(styles)(FindPeople));

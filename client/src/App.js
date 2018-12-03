@@ -3,6 +3,8 @@ import MainRouter from './MainRouter'
 import { BrowserRouter } from 'react-router-dom'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import {teal, orange} from '@material-ui/core/colors'
+import { connect } from 'react-redux'
+import { getPost ,getUser } from './actions/index'
 
 // Create a theme instance.
 const theme = createMuiTheme({
@@ -25,12 +27,20 @@ const theme = createMuiTheme({
   }
 })
 
-const App = () => (
-  <BrowserRouter>
-    <MuiThemeProvider theme={theme}>
-      <MainRouter/>
-    </MuiThemeProvider>
-  </BrowserRouter>
-)
+class App extends Component{
+  componentDidMount() {
+    this.props.getPost();
+    this.props.getUser();
+  }
+  render(){
+    return(
+      <BrowserRouter>
+        <MuiThemeProvider theme={theme}>
+          <MainRouter/>
+        </MuiThemeProvider>
+      </BrowserRouter>
+    );
+  }
+}
 
-export default App
+export default connect(null,{getPost,getUser})(App);

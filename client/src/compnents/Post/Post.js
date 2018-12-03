@@ -53,13 +53,36 @@ const styles = theme => ({
 })
 
 class Post extends Component {
+  state={
+    like:false,
+    likes:0,
+    comments:[]
+  }
+
+  componentDidMount=()=>{
+    this.setState(
+      {
+        likes: this.props.post.likes.length, 
+        comments: this.props.post.comments
+      })
+  }
+
+  componentWillReceiveProps = (props) => {
+    this.setState(
+      {
+        likes: props.post.likes.length, 
+        comments: props.post.comments
+      })
+  }
+
+
   render() {
-    const {classes} = this.props
+    const {classes} = this.props;
     return (
       <Card className={classes.card}>
         <CardHeader
             avatar={
-              <Avatar src={ImageAva}/>
+              <Avatar src={this.props.post.postedBy.photo}/>
             }
             action={
               <IconButton >
@@ -67,24 +90,24 @@ class Post extends Component {
               </IconButton>
             }
             title={<Link className={classes.link} to="">Name</Link>}
-            subheader="One day ago"
+            subheader={(new Date(this.props.post.created)).toDateString()}
             className={classes.cardHeader}
           />
           <CardContent className={classes.cardContent}>
           <Typography component="p" className={classes.text}>
-              Text
+              {this.props.post.text}
           </Typography>
         </CardContent>
           <CardActions>
             <IconButton  className={classes.button} aria-label="Like" color="secondary">
                 <FavoriteIcon />
-              </IconButton><span>22</span>
+              </IconButton><span>{this.state.likes}</span>
             <IconButton className={classes.button} aria-label="Comment" color="secondary">
                 <CommentIcon/>
-            </IconButton> <span>22</span>
+            </IconButton> <span>{this.state.comments.length}</span>
         </CardActions>
         <Divider/>
-        <Comments />
+        <Comments comments={this.state.comments} />
       </Card>
     )
   }

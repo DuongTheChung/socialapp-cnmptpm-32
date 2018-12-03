@@ -1,4 +1,3 @@
-
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
@@ -8,7 +7,10 @@ class PostList extends Component {
   render() {
     return (
       <div style={{marginTop: '24px'}}>
-        <Post/>
+        {this.props.posts.map((item, i) => {
+            return <Post post={item} key={i}/>
+          })
+        }
       </div>
     )
   }

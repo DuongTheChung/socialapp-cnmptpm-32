@@ -46,10 +46,10 @@ class Comments extends Component {
     const commentBody = item => {
       return (
         <p className={classes.commentText}>
-          <Link to={"/"} className={classes.link}>{item}</Link><br/>
-          Comment
+          <Link to="" className={classes.link}>{item.postedId.name}</Link><br/>
+          {item.text}
           <span className={classes.commentDate}>
-              One day ago
+            {(new Date(item.created)).toDateString()}
           </span>
         </p>
       )
@@ -68,20 +68,16 @@ class Comments extends Component {
                 />}
               className={classes.cardHeader}
         />
-        <CardHeader
-          avatar={
-            <Avatar className={classes.smallAvatar} src={ImageAva}/>
-          }
-          title={commentBody("comment1")}
-          className={classes.cardHeader}
-        />
-         <CardHeader
-          avatar={
-            <Avatar className={classes.smallAvatar} src={ImageAva}/>
-          }
-          title={commentBody("comment2")}
-          className={classes.cardHeader}
-        />  
+        { this.props.comments.map((item, i) => {
+            return <CardHeader
+                avatar={
+                  <Avatar className={classes.smallAvatar} src={item.postedId.photo}/>
+                }
+                title={commentBody(item)}
+                className={classes.cardHeader}
+                key={i}/>
+              })
+        }
     </div>)
   }
 }

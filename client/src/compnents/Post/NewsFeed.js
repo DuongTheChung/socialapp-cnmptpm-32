@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import PostList from './PostList'
 import NewPost from './NewPost'
+import { connect } from 'react-redux'
 
 
 const styles = theme => ({
@@ -25,7 +26,7 @@ const styles = theme => ({
 })
 class Newsfeed extends Component {
   render() {
-    const {classes} = this.props
+    const { classes, posts } = this.props
     return (
       <Card className={classes.card}>
         <Typography type="title" className={classes.title}>
@@ -34,7 +35,7 @@ class Newsfeed extends Component {
         <Divider/>
         <NewPost />
         <Divider/>
-        <PostList/>
+        <PostList posts={posts}/>
       </Card>
     )
   }
@@ -43,4 +44,9 @@ Newsfeed.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(Newsfeed)
+const mapStateFromProps = state => ({
+  posts: state.post.currentPosts
+});
+
+
+export default  connect(mapStateFromProps,null)(withStyles(styles)(Newsfeed))
