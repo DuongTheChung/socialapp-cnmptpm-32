@@ -4,20 +4,37 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "client-install": "npm install --prefix ./client",
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "npm start --prefix ./client",
+    "client": "node start-client.js",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "concurrently": "^4.1.0",
+    "cookie-parser": "^1.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
+    "fetch": "^1.1.0",
+    "formidable": "^1.2.1",
+    "fs": "0.0.1-security",
+    "helmet": "^3.15.0",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
     "mongoose": "^5.3.16",
-    "nodemon": "^1.18.8"
+    "nodemon": "^1.18.8",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "sequelize": "^4.42.0",
+    "stellar-base": "^0.10.0",
+    "tendermint": "^3.4.0",
+    "varstruct": "^6.1.2"
   }
 }

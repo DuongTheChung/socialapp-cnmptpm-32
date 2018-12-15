@@ -1,30 +1,44 @@
-const express=require('express');
-const mongoose=require('mongoose');
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const passport = require("passport");
+const path = require("path");
 
-//Routes
-const user=require('./routes/user.routes');
-const auth=require('./routes/auth.routes');
-const post=require('./routes/post.routes');
+const User=require('./Api/routes/user.toutes');
+const Post = require('./Api/routes/post.routes');
+const Auth= require ('./Api/routes/auth.routes');
 
 const app = express();
 
-//DB config
-const db=require('./config/database').mongoURI;
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
 
-//Connect mongo
+app.use(bodyParser.json());
+
+const db = require("./Api/config/keys").mongoURI;
+
 mongoose
-    .connect(db)
-    .then(()=> console.log('Mongoose connected'))
-    .catch(err=>console.log(err));
-    
-
-app.get('/',(reg,res)=>res.send('Hello'));
+  .connect(db)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
 
 
-app.use('/api/user',user);
-app.use('/api/auth',auth);
-app.use('/api/post',post);
+app.use('/api/users',User);
+app.use('/api/auth',Auth);
+app.use('/api/posts',Post);
 
-const port=process.env.PORT || 5000;
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static("client/build"));
+    app.get("*", (req, res) => {
+      res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+    });
+}
 
-app.listen(port,()=> console.log(`Server running on port ${port}`));
+
+  
+const port = process.env.PORT || 5000;
+  
+app.listen(port, () => console.log(`Server running on port ${port}`));

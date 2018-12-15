@@ -8,6 +8,10 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import FindPeople from '../PeopleCanFollow/FindPeople'
 import NewsFeed from '../Post/NewsFeed'
+import seashellImg from '../../assets/images/home.jpg';
+import { connect } from 'react-redux';
+import auth from '../Authentication/auth-helper';
+
 
 const styles = theme => ({
   root: {
@@ -29,26 +33,65 @@ const styles = theme => ({
 })
 
 class Home extends Component {
+  state = {
+    defaultPage: true
+  }
+  init = () => {
+    if(auth.isAuthenticated()){
+      this.setState({defaultPage: false})
+    }else{
+      this.setState({defaultPage: true})
+    }
+  }
+  componentWillReceiveProps = () => {
+    this.init()
+  }
+  componentDidMount = () => {
+    this.init()
+  }
+
   render() {
     const { classes }=this.props;
     return (
       <div className={classes.root}>
-        <Grid container spacing={24}>
+         {this.state.defaultPage &&
+          <Grid container spacing={24}>
+            <Grid item xs={12}>
+              <Card className={classes.card}>
+                <Typography type="headline" component="h2" className={classes.title}>
+                  Home Page
+                </Typography>
+                <CardMedia className={classes.media} image={seashellImg} title="Unicorn Shells"/>
+                <CardContent>
+                  <Typography type="body1" component="p">
+                    Welcome to the MERN Social home page. 
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        }
+        {!this.state.defaultPage &&
+          <Grid container spacing={24}>
             <Grid item xs={8} sm={7}>
               <NewsFeed/>
             </Grid>
             <Grid item xs={6} sm={5}>
               <FindPeople/>
             </Grid>
-        </Grid>
+          </Grid>
+        }
       </div>
     )
   }
 }
 
-
 Home.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(Home)
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps,null)(withStyles(styles)(Home))

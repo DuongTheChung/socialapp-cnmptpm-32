@@ -6,6 +6,7 @@ import { combineReducers } from 'redux';
 const RootReducer=combineReducers({
     post:PostReducer,
     user:UserReducer
+
 });
 
 export default RootReducer;

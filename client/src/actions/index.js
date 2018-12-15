@@ -1,5 +1,6 @@
 import * as actionTypes from './types';
-import { Users, Posts } from '../seed.data';
+import { Posts ,  Users } from '../seed.data';
+
 export const getPost= () =>{
     return {
         type: actionTypes.GET_POST,
