@@ -54,10 +54,13 @@ clickSubmit = () => {
   }
 
   signin(user).then((data) => {
+    if (data.error) {
+      this.setState({error: data.error})
+    } else {
       auth.authenticate(data, () => {
-        console.log(data);
         this.setState({redirectToReferrer: true})
       })
+    }
   })
 }
 

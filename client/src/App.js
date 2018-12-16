@@ -4,8 +4,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
 import {teal, orange} from '@material-ui/core/colors'
 import { connect } from 'react-redux'
-import { getPost ,getUser } from './actions/index'
-
+import auth from './compnents/Authentication/auth-helper'
+ 
 // Create a theme instance.
 const theme = createMuiTheme({
   palette: {
@@ -28,10 +28,6 @@ const theme = createMuiTheme({
 })
 
 class App extends Component{
-  componentDidMount() {
-    this.props.getPost();
-    this.props.getUser();
-  }
   render(){
     return(
       <BrowserRouter>
@@ -43,4 +39,4 @@ class App extends Component{
   }
 }
 
-export default connect(null,{getPost,getUser})(App);
+export default App;

@@ -14,7 +14,7 @@ const signin = (user) => {
 }
 
 const create = (user) => {
-    return fetch('/api/users/', {
+    return fetch('/api/users/create', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

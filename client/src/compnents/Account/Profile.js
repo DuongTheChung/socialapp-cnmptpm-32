@@ -16,6 +16,9 @@ import ProfileTabs from './ProfileTabs'
 import DeleteUser from './DeleteUser'
 import { Link } from 'react-router-dom'
 import ImageAva from '../../assets/images/ava2.jpg'
+import { connect } from 'react-redux'
+import { getCurrentUser , getBalanceAndSequence } from '../../actions/index'
+
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -37,8 +40,13 @@ const styles = theme => ({
 })
 
 class Profile extends Component {
+  componentDidMount(){
+    const userId=this.props.match.params.userId;
+    this.props.getCurrentUser(userId);
+    this.props.getBalanceAndSequence(userId);
+  }
   render() {
-    const { classes }=this.props;
+    const { classes , currentUser }=this.props;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
@@ -49,7 +57,7 @@ class Profile extends Component {
             <ListItemAvatar>
               <Avatar src={ImageAva} className={classes.bigAvatar}/>
             </ListItemAvatar>
-            <ListItemText primary="chung" secondary="email"/>
+            <ListItemText primary={currentUser.name} secondary={currentUser.email}/>
             <ListItemSecondaryAction>
                 <Link to="/editprofile">
                     <IconButton aria-label="Edit" color="primary">
@@ -58,6 +66,12 @@ class Profile extends Component {
                 </Link>
               <DeleteUser/>
             </ListItemSecondaryAction>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary={"Balance : "+currentUser.balance}/>
+          </ListItem>
+          <ListItem>
+            <ListItemText primary={"Sequence : "+currentUser.sequence}/>
           </ListItem>
           <Divider/>
           <ListItem>
@@ -73,4 +87,10 @@ Profile.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(Profile)
+const mapStateFromProps=(state)=>({
+  currentUser:state.user.currentUser
+})
+
+
+export default connect(mapStateFromProps,
+      {getCurrentUser,getBalanceAndSequence})(withStyles(styles)(Profile))

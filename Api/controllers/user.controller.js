@@ -1,3 +1,4 @@
+var fetchUrl = require("fetch").fetchUrl;
 const User = require('../models/user.model');
 const _ = require('lodash');
 const errorHandler = require('../helpers/dbErrorHandler');
@@ -8,13 +9,6 @@ const samKey = require('../transaction/same-key');
 let { RpcClient } = require('tendermint');
 
 
-Object.prototype.isEmpty = function() {
-  for(var key in this) {
-      if(this.hasOwnProperty(key))
-          return false;
-  }
-  return true;
-}
 
 const create=(req, res, next)=>{
   const user = new User(req.body);
@@ -39,7 +33,7 @@ const create=(req, res, next)=>{
           const data2= prefix.concat(etx);
           client.broadcastTxCommit({ tx: data2  })
               .then((hash)=>{
-                if(!hash.check_tx.isEmpty()){
+                if(JSON.stringify(hash.check_tx).length==2){
                   console.log(hash.check_tx);
                   return res.status(400).json({ error: hash.check_tx.log })
                 }else{
@@ -65,6 +59,79 @@ const create=(req, res, next)=>{
       }
     })
 }
+
+const list =(req,res)=>{
+  const userId=req.body._id;
+  User.find({ _id: { $nin : userId } },(err, users)=>{
+    if(err){
+      return res.status(400).json({
+        error:errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(users);
+  })
+}
+
+const getUserById=(req,res,next)=>{
+  const id=req.params.userId;
+  User.findById({_id:id},(err,user)=>{
+    if(err){
+      return res.status(400).json({
+        error:errorHandler.getErrorMessage(err)
+      })
+    }
+    res.json(user);
+  });
+}
+
+const updateBalanceAndSequenceUser=(req,res)=>{
+  const publicKey=req.params.publickey;
+  const a=[];
+  const b=[];
+  const c=[];
+  var balance=0;
+  var sequence=0;
+  var url="https://komodo.forest.network/tx_search?query=%22account=%27"+publicKey+"%27%22";
+  fetchUrl(url, function(error, meta, body){
+    if(error){
+      res.status(400).json({
+        error:'Update balance and sequence error'
+      })
+    }
+    JSON.parse(body.toString()).result.txs.forEach(element => {
+      a.push(element.tx);
+    });
+    a.forEach(element => {
+      const dt=transaction.decode(element);
+      b.push(dt);
+    });
+    b.forEach(element => {
+      if(element.operation==='payment' && element.params.address===publicKey){
+        balance=balance+element.params.amount;
+      }else{
+        if(element.operation==='payment' && element.params.address!==publicKey){
+          balance=balance-element.params.amount;
+        }
+      }
+    })
+    b.forEach(element => {
+      if(element.account===publicKey){
+        if(element.sequence > sequence){
+          sequence=element.sequence
+        }
+      }
+    });
+    const data={
+      balance:balance,
+      sequence:sequence
+    }
+    res.json(data);
+  });
+}
+
 module.exports = { 
     create,
+    list,
+    getUserById,
+    updateBalanceAndSequenceUser,
 }

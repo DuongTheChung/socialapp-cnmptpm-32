@@ -15,6 +15,8 @@ import { Link } from 'react-router-dom'
 import Snackbar from '@material-ui/core/Snackbar'
 import ViewIcon from '@material-ui/icons/Visibility'
 import { connect } from 'react-redux'
+import auth from '../Authentication/auth-helper';
+import { getPost ,getUsers } from '../../actions/index';
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -40,6 +42,13 @@ const styles = theme => ({
   }
 })
 class FindPeople extends Component {
+  componentDidMount(){
+    const userId=auth.isAuthenticated().user._id;
+    const user={
+      _id:userId
+    }
+    this.props.getUsers(user);
+  }
   render() {
     const {classes , users} = this.props
     return (<div>
@@ -52,16 +61,16 @@ class FindPeople extends Component {
               return <span key={i}>
                 <ListItem>
                   <ListItemAvatar className={classes.avatar}>
-                      <Avatar src={item.photo}/>
+                      <Avatar src=""/>
                   </ListItemAvatar>
                   <ListItemText primary={item.name}/>
                   <ListItemSecondaryAction className={classes.follow}>
-                    <Link to="">
+                    <Link to={"/user/" + item._id}>
                       <IconButton variant="raised" color="secondary" className={classes.viewButton}>
                         <ViewIcon/>
                       </IconButton>
                     </Link>
-                    <Button aria-label="Follow" variant="raised" color="primary" >
+                    <Button aria-label="Follow" variant="raised" color="primary">
                       Follow
                     </Button>
                   </ListItemSecondaryAction>
@@ -88,8 +97,8 @@ FindPeople.propTypes = {
 }
 
 const mapStateFromProps = state => ({
-  users: state.user.currentUsers
+  users: state.user.listUser
 });
 
 
-export default  connect(mapStateFromProps,null)(withStyles(styles)(FindPeople));
+export default  connect(mapStateFromProps, {getPost,getUsers})(withStyles(styles)(FindPeople));

@@ -8,6 +8,7 @@ import Signup from './compnents/Authentication/Register'
 import EditProfile from './compnents/Account/EditProfile'
 import { withRouter } from 'react-router';
 import auth from './compnents/Authentication/auth-helper';
+import { connect } from 'react-redux'
 
 class MainRouter extends Component {
   componentDidMount=()=>{
@@ -15,6 +16,7 @@ class MainRouter extends Component {
       this.props.history.push('/');
     }
   }
+
   render() {
     return (<div>
       <Menu />
@@ -22,11 +24,11 @@ class MainRouter extends Component {
         <Route exact path="/" component={Home}/>
         <Route path="/signin" component={Signin}/>
         <Route path="/signup" component={Signup}/>
-        <Route  path="/profile" component={Profile}/>
+        <Route path="/user/:userId" component={Profile}/>
         <Route  path="/editprofile" component={EditProfile}/>
       </Switch>
     </div>)
   }
 }
 
-export default  withRouter(MainRouter);
+export default withRouter(MainRouter);
