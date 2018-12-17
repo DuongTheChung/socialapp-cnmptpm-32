@@ -10,12 +10,16 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import { Redirect } from 'react-router-dom'
 import { signin } from '../Authentication/api-auth'
-import auth from '../Authentication/auth-helper'
+import auth from '../Authentication/auth-helper' 
+import { connect } from 'react-redux'
+import { getPrivateKey } from '../../actions/index'
+import { Keypair } from 'stellar-base';
+
 
 
 const styles = theme => ({
   card: {
-    maxWidth: 600,
+    maxWidth: 800,
     margin: 'auto',
     textAlign: 'center',
     marginTop: theme.spacing.unit * 5,
@@ -31,7 +35,7 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 300
+    width: 600
   },
   submit: {
     margin: 'auto',
@@ -41,15 +45,18 @@ const styles = theme => ({
 
 class Signin extends Component {
   state = {
-    email: '',
+    privateKey: '',
     password: '',
     error: '',
     redirectToReferrer: false
 }
 
 clickSubmit = () => {
+
+  const key = Keypair.fromSecret(this.state.privateKey);
+  const publicKey=key.publicKey();
   const user = {
-    email: this.state.email || undefined,
+    publicKey: publicKey  || undefined,
     password: this.state.password || undefined,
   }
 
@@ -58,7 +65,8 @@ clickSubmit = () => {
       this.setState({error: data.error})
     } else {
       auth.authenticate(data, () => {
-        this.setState({redirectToReferrer: true})
+        this.setState({redirectToReferrer: true});
+        this.props.getPrivateKey(this.state.privateKey);
       })
     }
   })
@@ -87,7 +95,7 @@ render() {
         <Typography type="headline" component="h2" className={classes.title}>
           Sign In
         </Typography>
-        <TextField id="email" type="email" label="Email" className={classes.textField} value={this.state.email} onChange={this.handleChange('email')} margin="normal"/><br/>
+        <TextField id="privateKey" type="privateKey" label="ID-Key"  className={classes.textField} value={this.state.privateKey} onChange={this.handleChange('privateKey')} margin="normal"/><br/>
         <TextField id="password" type="password" label="Password" className={classes.textField} value={this.state.password} onChange={this.handleChange('password')} margin="normal"/>
         <br/> {
           this.state.error && (<Typography component="p" color="error">
@@ -108,4 +116,4 @@ Signin.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default (withStyles(styles)(Signin))
+export default connect(null,{ getPrivateKey })(withStyles(styles)(Signin))

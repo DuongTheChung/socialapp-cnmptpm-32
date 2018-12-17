@@ -38,7 +38,8 @@ const PostParams = vstruct([
 ]);
 
 const UpdateAccountParams = vstruct([
-  { name: 'name', type: vstruct.VarString(vstruct.UInt8) },
+  { name: 'key', type: vstruct.VarString(vstruct.UInt8) },
+  { name: 'value', type: vstruct.VarBuffer(vstruct.UInt16BE) },
 ]);
 
 function encode(tx) {

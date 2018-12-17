@@ -9,13 +9,6 @@ const UserSchema = new mongoose.Schema({
     trim: true,
     required: 'Name is required'
   },
-  email: {
-    type: String,
-    trim: true,
-    unique: 'Email already exists',
-    match: [/.+\@.+\..+/, 'Please fill a valid email address'],
-    required: 'Email is required'
-  },
   hashed_password: {
     type: String,
     required: "Password is required"
@@ -35,17 +28,21 @@ const UserSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-
-  secretKey:{
-    type:String,
-    required:true
+  
+  email: {
+    type: String,
+    trim: true,
+    unique: 'Email already exists',
+    match: [/.+\@.+\..+/, 'Please fill a valid email address'],
+    required: 'Email is required'
   },
-
+  
   balance:{
     type:Number,
     required:true,
     default:0
   },
+
 
   following: [{type: mongoose.Schema.ObjectId, ref: 'User'}],
   followers: [{type: mongoose.Schema.ObjectId, ref: 'User'}]

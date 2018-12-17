@@ -1,7 +1,7 @@
 import * as actionTypes from './types';
 import {    list , 
             findPeople,getUserById ,
-            updateBalanceAndSequence 
+            getBalanceAndSequenceApi 
         } from '../compnents/Account/api-user';    
 import { Posts , Users } from '../seed.data';
 
@@ -43,7 +43,7 @@ export const getBalanceAndSequence=(userId)=>dispatch=>{
                     payload:data.error
                 })
             }else{
-                updateBalanceAndSequence(data.publicKey)
+                getBalanceAndSequenceApi(data.publicKey)
                 .then(data=>{
                     if(data.error){
                         dispatch({
@@ -56,6 +56,10 @@ export const getBalanceAndSequence=(userId)=>dispatch=>{
                 })
             }
         })
+}
+
+export const getPrivateKey=(key)=>dispatch=>{
+    dispatch(setPrivateKey(key))
 }
 
 
@@ -84,5 +88,12 @@ export const setBalanceAndSequence=(data)=>{
     return {
         type:actionTypes.SET_BALANCE_SEQUENCE,
         currentBalanceAndSequence:data
+    }
+}
+
+export const setPrivateKey=(key)=>{
+    return{
+        type:actionTypes.SET_PRIVATE_KEY,
+        currentPrivateKey:key
     }
 }

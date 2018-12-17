@@ -16,8 +16,11 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import {Link} from 'react-router-dom'
 import { create } from './api-auth'
 import { Keypair}  from 'stellar-base'
-const key = Keypair.random();
+import { publicKeySame,secretKeySame } from '../../same-key'
+import { getBalanceAndSequenceApi } from '../../compnents/Account/api-user'
+import { commit } from '../../compnents/Authentication/api-auth'
 
+const key = Keypair.random();
 
 const styles = theme => ({
   card: {
@@ -51,6 +54,8 @@ class Signup extends Component {
       password: '',
       email: '',
       open: false,
+      privateKey:"",
+      sequence:0,
       error: ''
   }
 
@@ -58,24 +63,63 @@ class Signup extends Component {
     this.setState({[name]: event.target.value})
   }
 
+  componentDidMount(){
+    getBalanceAndSequenceApi(publicKeySame)
+    .then(data=>{
+      if(data.error){
+        console.log(data.error)
+      }else{
+        console.log(data);
+        this.setState({ sequence:data.sequence })
+      }
+    })
+  }
+
+
   clickSubmit = () => {
+    const publicKey=key.publicKey();
+    const secretKey=key.secret();
     const user = {
       name: this.state.name || undefined,
       email: this.state.email || undefined,
       password: this.state.password || undefined,
-      publicKey:key.publicKey() || undefined,
-      secretKey:key.secret() || undefined
+      publicKey:publicKey || undefined,
     }
-    create(user).then((data) => {
-      if (data.error) {
+
+    const tx={
+      version:1,
+      sequence:this.state.sequence,
+      operation:'create_account',
+      params:{
+        address:user.publicKey
+      }};
+    
+      const data={
+        tx:tx,
+        privateKey:secretKeySame
+      }
+    commit(data).then(data=>{
+      if(data.error){
         console.log(data.error);
         this.setState({error: data.error})
-      } else {
-        console.log(data)
-        this.setState({error: '', open: true})
-      }
-    });
-  }
+      }else{
+        create(user).then((data)=>{
+          if(data.error){
+            console.log(data.error);
+            this.setState({ error:data.error })
+          }else{
+            console.log(data);
+            this.setState({
+              error: '', 
+              open: true,
+              privateKey:secretKey
+          })
+        }
+      });
+    }
+  });
+}
+          
 
   render() {
     const {classes} = this.props
@@ -102,7 +146,7 @@ class Signup extends Component {
         <DialogTitle>New Account</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            New account successfully created.
+            Successfully created.Login with ID:{this.state.privateKey}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

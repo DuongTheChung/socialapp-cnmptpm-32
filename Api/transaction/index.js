@@ -3,9 +3,6 @@ const vstruct = require('varstruct');
 const crypto = require('crypto');
 const { Keypair } = require('stellar-base');
 const v1=require('./v1');
-const samKey = require('./same-key');
-let { RpcClient } = require('tendermint');
-
 
 
 const Transaction = vstruct([
@@ -57,28 +54,12 @@ function verify(tx) {
     return key.verify(getUnsignedHash(tx), tx.signature);
 }
 
-const create_account=(tx)=>{
-    const atx=tx;
-    let client = RpcClient('https://gorilla.forest.network:443');
-    sign(atx,samKey.secretKey);
-    const etx=encode(atx).toString('hex');
-    const prefix="0x";
-    const data2= prefix.concat(etx);
-    client.broadcastTxCommit({ tx: data2  })
-        .then(res=>{
-            console.log(res);
-            return true;
-        })
-        .catch(err=>{
-            console.log(err);
-            return false
-        })
-
-}
-
 module.exports= {
-    create_account, encode,decode,
-    getUnsignedHash,sign,verify
+    encode,
+    decode,
+    getUnsignedHash,
+    sign,
+    verify
 }
 
   

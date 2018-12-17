@@ -9,9 +9,9 @@ const initUserState={
         balance:0,
         name:"",
         publicKey:"",
-        email:"",
         sequence:0
-    }
+    },
+    currentPrivateKey:""
 }
 
 const user_reducer=(state=initUserState,action)=>{
@@ -19,19 +19,19 @@ const user_reducer=(state=initUserState,action)=>{
         case actionTypes.SET_LIST_USER:
             return{
                 ...state,
-                listUser:action.listUser
+                listUser:action.listUser,
             }
         case actionTypes.SET_CURRENT_USER:
             return {
                 ...state,
+               
                 currentUser:{
                     following:action.currentUser.following,
                     followers:action.currentUser.followers,
                     balance:action.currentUser.balance,
                     name:action.currentUser.name,
                     publicKey:action.currentUser.publicKey,
-                    email:action.currentUser.email,
-                }
+                },
             }
         case actionTypes.SET_BALANCE_SEQUENCE:
             var cur=state.currentUser;
@@ -45,10 +45,14 @@ const user_reducer=(state=initUserState,action)=>{
                     balance:cur.balance,
                     name:cur.name,
                     publicKey:cur.publicKey,
-                    email:cur.email,
                     sequence:cur.sequence
-                }
+                },
                     
+            }
+        case actionTypes.SET_PRIVATE_KEY:
+            return{
+                ...state,
+                currentPrivateKey:action.currentPrivateKey
             }
         default:
             return state;

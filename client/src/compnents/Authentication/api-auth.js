@@ -27,6 +27,21 @@ const create = (user) => {
       }).catch((err) => console.log(err))
 }
 
+const commit=(transaction)=>{
+  return fetch('/api/transaction/commit', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(transaction)
+  })
+  .then((response) => {
+    return response.json()
+  }).catch((err) => console.log(err))
+}
+
+
 const signout = () => {
     return fetch('/auth/signout/', {
       method: 'GET',
@@ -38,5 +53,6 @@ const signout = () => {
 export { 
     signin,
     create,
-    signout
+    signout,
+    commit
 }

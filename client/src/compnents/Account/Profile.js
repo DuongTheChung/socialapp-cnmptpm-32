@@ -11,12 +11,13 @@ import Avatar from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton'
 import Typography from '@material-ui/core/Typography'
 import Edit from '@material-ui/icons/Edit'
+import Payment from '@material-ui/icons/Payment'
 import Divider from '@material-ui/core/Divider'
 import ProfileTabs from './ProfileTabs'
-import DeleteUser from './DeleteUser'
 import { Link } from 'react-router-dom'
 import ImageAva from '../../assets/images/ava2.jpg'
 import { connect } from 'react-redux'
+import auth from '../Authentication/auth-helper'
 import { getCurrentUser , getBalanceAndSequence } from '../../actions/index'
 
 
@@ -42,11 +43,11 @@ const styles = theme => ({
 class Profile extends Component {
   componentDidMount(){
     const userId=this.props.match.params.userId;
-    this.props.getCurrentUser(userId);
+    this.props.getCurrentUser(userId,auth);
     this.props.getBalanceAndSequence(userId);
   }
   render() {
-    const { classes , currentUser }=this.props;
+    const { classes , currentUser , privateKey }=this.props;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
@@ -57,14 +58,18 @@ class Profile extends Component {
             <ListItemAvatar>
               <Avatar src={ImageAva} className={classes.bigAvatar}/>
             </ListItemAvatar>
-            <ListItemText primary={currentUser.name} secondary={currentUser.email}/>
+            <ListItemText primary={currentUser.name} />
             <ListItemSecondaryAction>
                 <Link to="/editprofile">
                     <IconButton aria-label="Edit" color="primary">
                         <Edit/>
                     </IconButton>
                 </Link>
-              <DeleteUser/>
+                <Link to={"/payment/" + this.props.match.params.userId}>
+                    <IconButton aria-label="Edit" color="secondary">
+                        <Payment/>
+                    </IconButton>
+                </Link>
             </ListItemSecondaryAction>
           </ListItem>
           <ListItem>
@@ -88,7 +93,8 @@ Profile.propTypes = {
 }
 
 const mapStateFromProps=(state)=>({
-  currentUser:state.user.currentUser
+  currentUser:state.user.currentUser,
+  privateKey:state.user.currentPrivateKey
 })
 
 

@@ -24,8 +24,8 @@ const getUserById=(userId)=>{
   }).catch((err) => console.log(err))
 }
 
-const updateBalanceAndSequence=(publickey)=>{
-  return fetch('/api/users/balance-sequence/'+publickey, {
+const getBalanceAndSequenceApi=(publickey)=>{
+  return fetch('/api/transaction/balance-sequence/'+publickey, {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
@@ -39,5 +39,5 @@ const updateBalanceAndSequence=(publickey)=>{
 export {
   list,
   getUserById,
-  updateBalanceAndSequence
+  getBalanceAndSequenceApi
 }

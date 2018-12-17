@@ -48,6 +48,13 @@ const styles = theme => ({
 })
 
 class EditProfile extends Component {
+  state={
+    name:''
+  }
+
+  
+
+
   render() {
     const {classes} = this.props
     return (
@@ -64,14 +71,7 @@ class EditProfile extends Component {
           </label>
           <span className={classes.filename}>''</span><br/>
           <TextField id="name" label="Name" className={classes.textField} /><br/>
-          <TextField
-            id="multiline-flexible"
-            label="About"
-            multiline
-            rows="2"
-            className={classes.textField}
-            margin="normal"
-          /><br/>
+          <br/>
           <TextField id="email" type="email" label="Email" className={classes.textField}  margin="normal"/><br/>
           <TextField id="password" type="password" label="Password" className={classes.textField}  margin="normal"/>
           <br/> 

@@ -2,10 +2,11 @@ const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const config = require('../config/keys');
+const transaction = require('../transaction/index');
 
 const signin = (req, res) => {
     User.findOne({
-      "email": req.body.email
+      "publicKey": req.body.publicKey
     }, (err, user) => {
   
       if (err || !user)
@@ -15,7 +16,7 @@ const signin = (req, res) => {
   
       if (!user.authenticate(req.body.password)) {
         return res.status('401').send({
-          error: "Email and password don't match."
+          error: "Key-ID and password don't match."
         })
       }
   
@@ -29,24 +30,21 @@ const signin = (req, res) => {
   
       return res.json({
         token,
-        user: {_id: user._id, name: user.name, email: user.email}
+        user: {_id: user._id, name: user.name, publicKey: user.publicKey}
       })
   
     })
   }
-  
   const signout = (req, res) => {
     res.clearCookie("t")
     return res.status('200').json({
       message: "signed out"
     })
   }
-  
   const requireSignin = expressJwt({
     secret: config.jwtSecret,
     userProperty: 'auth'
   })
-  
   const hasAuthorization = (req, res, next) => {
     const authorized = req.profile && req.auth && req.profile._id == req.auth._id
     if (!(authorized)) {
@@ -56,7 +54,6 @@ const signin = (req, res) => {
     }
     next()
   }
-
 
   module.exports={
     signin,

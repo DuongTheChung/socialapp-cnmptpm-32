@@ -8,7 +8,7 @@ import Signup from './compnents/Authentication/Register'
 import EditProfile from './compnents/Account/EditProfile'
 import { withRouter } from 'react-router';
 import auth from './compnents/Authentication/auth-helper';
-import { connect } from 'react-redux'
+import Payment from './compnents/Account/Payment';
 
 class MainRouter extends Component {
   componentDidMount=()=>{
@@ -26,6 +26,7 @@ class MainRouter extends Component {
         <Route path="/signup" component={Signup}/>
         <Route path="/user/:userId" component={Profile}/>
         <Route  path="/editprofile" component={EditProfile}/>
+        <Route  path="/payment/:userId" component={Payment}/>
       </Switch>
     </div>)
   }
