@@ -5,6 +5,7 @@ const config = require('../config/keys');
 const transaction = require('../transaction/index');
 
 const signin = (req, res) => {
+    const privateKey=req.body.privateKey;
     User.findOne({
       "publicKey": req.body.publicKey
     }, (err, user) => {
@@ -30,7 +31,7 @@ const signin = (req, res) => {
   
       return res.json({
         token,
-        user: {_id: user._id, name: user.name, publicKey: user.publicKey}
+        user: {_id: user._id, name: user.name, publicKey: user.publicKey,privateKey:privateKey}
       })
   
     })

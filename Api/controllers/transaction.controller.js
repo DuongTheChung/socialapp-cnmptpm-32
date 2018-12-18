@@ -15,7 +15,6 @@ const commit=(req,res)=>{
             value:Buffer.from(params.value)
         }
     }
-
     const tx={
         version:txBody.version,
         sequence:txBody.sequence+1,
@@ -24,38 +23,44 @@ const commit=(req,res)=>{
         params:params,
         signature:new Buffer(64)  
     }
-
-    console.log(tx);
-    
     let client = RpcClient('https://gorilla.forest.network:443');
-    transaction.sign(tx,privateKey);
-    const etx=transaction.encode(tx).toString('hex');
-    const prefix="0x";
-    const data2= prefix.concat(etx);
-    client.broadcastTxCommit({ tx: data2  })
-    .then((hash)=>{
-        if(JSON.stringify(hash.check_tx).length != 2){
-            console.log(hash.check_tx);
-                return res.status(400).json({ error:txBody.operation+" "+ hash.check_tx.log })
-        }else{
-            console.log(hash);
-            const data={
-                msg:'success'
-            }
-            res.json(data);
-        }})
-    .catch((err)=>{
-        return res.status(400).json({
-            error:'RPC tendermint error'
-        })
-    });
+    try{
+        transaction.sign(tx,privateKey);
+    }catch(error){
+        return res.status(400).json({ error:'Địa chỉ không chính xác' });
+    }finally{
+        const etx=transaction.encode(tx).toString('hex');
+        const prefix="0x";
+        const data2= prefix.concat(etx);
+        client.broadcastTxCommit({ tx: data2  })
+        .then((hash)=>{
+            if(JSON.stringify(hash.check_tx).length != 2){
+                console.log(hash.check_tx);
+                return res.status(400).json({error: txBody.operation+ "  "+hash.check_tx.log});
+            }else{
+                console.log(hash);
+                const data={
+                    msg:'success'
+                }
+                res.json(data);
+            }})
+        .catch((err)=>{
+            return res.status(400).json({
+                error:'RPC tendermint error'
+            })
+        });
+    }
 }
-const getBalanceAndSequence=(req,res)=>{
+const getDetail=(req,res)=>{
     const publicKey=req.params.publickey;
     const a=[];
     const b=[];
     var balance=0;
     var sequence=0;
+    var name='';
+    var following = [];
+    var followers =[];
+
     var Url="https://komodo.forest.network/tx_search?query=%22account=%27"+publicKey+"%27%22";
         fetchUrl(Url, function(error, meta, body){
         
@@ -88,18 +93,26 @@ const getBalanceAndSequence=(req,res)=>{
                 if(element.sequence > sequence){
                 sequence=element.sequence
                 }
-            }
-            });
+            }})
+            b.forEach(element => {
+                if(element.operation==='update_account' && element.params.key==='name'){
+                   name=element.params.value.toString('utf-8');
+                }
+            })
             const data={
                 balance:balance,
-                sequence:sequence
+                sequence:sequence,
+                name:name,
+                followers:followers,
+                following:following
             }
             res.json(data);
         });
     });
 }
 
+
 module.exports={
     commit,
-    getBalanceAndSequence
+    getDetail
 }

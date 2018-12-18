@@ -11,11 +11,7 @@ import { withStyles } from '@material-ui/core/styles'
 import { Redirect } from 'react-router-dom'
 import { signin } from '../Authentication/api-auth'
 import auth from '../Authentication/auth-helper' 
-import { connect } from 'react-redux'
-import { getPrivateKey } from '../../actions/index'
 import { Keypair } from 'stellar-base';
-
-
 
 const styles = theme => ({
   card: {
@@ -50,26 +46,47 @@ class Signin extends Component {
     error: '',
     redirectToReferrer: false
 }
+checkKey=(key)=>{
+  var data={};
+  try{
+      const key = Keypair.fromSecret(this.state.privateKey);
+      const publicKey=key.publicKey();
+      console.log(publicKey);
+      data={
+          publicKey:publicKey,
+          status:true
+      }
+      return data;
+  }catch(error){
+      data={
+          error:'Key-ID không chính xác',
+          status:false
+      }
+      return data;
+  }
+}
 
 clickSubmit = () => {
-
-  const key = Keypair.fromSecret(this.state.privateKey);
-  const publicKey=key.publicKey();
-  const user = {
-    publicKey: publicKey  || undefined,
-    password: this.state.password || undefined,
-  }
-
-  signin(user).then((data) => {
-    if (data.error) {
-      this.setState({error: data.error})
-    } else {
-      auth.authenticate(data, () => {
-        this.setState({redirectToReferrer: true});
-        this.props.getPrivateKey(this.state.privateKey);
-      })
+  const result=this.checkKey(this.state.privateKey);
+  console.log(result);
+  if(result.status){
+    const user = {
+      privateKey:this.state.privateKey || undefined,
+      publicKey: result.publicKey  || undefined,
+      password: this.state.password || undefined,
     }
-  })
+    signin(user).then((data) => {
+      if (data.error) {
+        this.setState({error: data.error})
+      } else {
+        auth.authenticate(data, () => {
+          this.setState({redirectToReferrer: true});
+        })
+      }
+    })
+  }else{
+    return this.setState({ error:result.error })
+  }
 }
 
 handleChange = name => event => {
@@ -116,4 +133,4 @@ Signin.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default connect(null,{ getPrivateKey })(withStyles(styles)(Signin))
+export default (withStyles(styles)(Signin))

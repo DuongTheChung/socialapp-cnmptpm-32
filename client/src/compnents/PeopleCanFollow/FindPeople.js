@@ -16,7 +16,7 @@ import Snackbar from '@material-ui/core/Snackbar'
 import ViewIcon from '@material-ui/icons/Visibility'
 import { connect } from 'react-redux'
 import auth from '../Authentication/auth-helper';
-import { getPost ,getUsers } from '../../actions/index';
+import { getPost ,getList } from '../../actions/index';
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -47,7 +47,7 @@ class FindPeople extends Component {
     const user={
       _id:userId
     }
-    this.props.getUsers(user);
+    this.props.getList(user);
   }
   render() {
     const {classes , users} = this.props
@@ -101,4 +101,4 @@ const mapStateFromProps = state => ({
 });
 
 
-export default  connect(mapStateFromProps, {getPost,getUsers})(withStyles(styles)(FindPeople));
+export default  connect(mapStateFromProps, {getPost,getList})(withStyles(styles)(FindPeople));

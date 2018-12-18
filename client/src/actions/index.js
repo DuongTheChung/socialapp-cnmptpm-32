@@ -1,12 +1,12 @@
 import * as actionTypes from './types';
 import {    list , 
             findPeople,getUserById ,
-            getBalanceAndSequenceApi 
+            getDetailApi 
         } from '../compnents/Account/api-user';    
 import { Posts , Users } from '../seed.data';
 
 
-export const getUsers=(user)=>dispatch=>{
+export const getList=(user)=>dispatch=>{
     list(user).then(data=>{
         if(data.error){
             dispatch({
@@ -14,13 +14,11 @@ export const getUsers=(user)=>dispatch=>{
                 payload:data.error
             })
         }else{
-            dispatch(setUsers(data))
+            dispatch(setList(data))
         }
     })
 }
-
-
-export const getCurrentUser=(userId)=>dispatch=>{
+export const getDetail=(userId)=>dispatch=>{
     getUserById(userId)
         .then(data=>{
             if(data.error){
@@ -29,21 +27,7 @@ export const getCurrentUser=(userId)=>dispatch=>{
                     payload:data.error
                 })
             }else{
-                dispatch(setCurrentUser(data))
-            }
-        })
-}
-
-export const getBalanceAndSequence=(userId)=>dispatch=>{
-    getUserById(userId)
-        .then(data=>{
-            if(data.error){
-                dispatch({
-                    type:actionTypes.GET_ERRORS,
-                    payload:data.error
-                })
-            }else{
-                getBalanceAndSequenceApi(data.publicKey)
+                getDetailApi(data.publicKey)
                 .then(data=>{
                     if(data.error){
                         dispatch({
@@ -51,49 +35,27 @@ export const getBalanceAndSequence=(userId)=>dispatch=>{
                             payload:data.error
                         })
                     }else{
-                        dispatch(setBalanceAndSequence(data))
+                        dispatch(setDetail(data))
                     }
                 })
             }
         })
 }
-
-export const getPrivateKey=(key)=>dispatch=>{
-    dispatch(setPrivateKey(key))
-}
-
-
 export const getPost= () =>{
     return {
         type: actionTypes.GET_POST,
         currentPosts:Posts
     };
 };
-
-export const setUsers =(data)=>{
+export const setList =(data)=>{
     return{
         type:actionTypes.SET_LIST_USER,
         listUser:data,
     }
 }
-
-export const setCurrentUser=(data)=>{
+export const setDetail=(data)=>{
     return {
-        type:actionTypes.SET_CURRENT_USER,
-        currentUser:data
-    }
-}
-
-export const setBalanceAndSequence=(data)=>{
-    return {
-        type:actionTypes.SET_BALANCE_SEQUENCE,
-        currentBalanceAndSequence:data
-    }
-}
-
-export const setPrivateKey=(key)=>{
-    return{
-        type:actionTypes.SET_PRIVATE_KEY,
-        currentPrivateKey:key
+        type:actionTypes.SET_DETAIL,
+        detail:data
     }
 }

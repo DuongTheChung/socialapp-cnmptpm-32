@@ -2,6 +2,4 @@ export const SET_POST='SET_POST';
 export const GET_POST='GET_POST';
 export const SET_LIST_USER='SET_USER';
 export const GET_ERRORS = "GET_ERRORS";
-export const SET_CURRENT_USER = "SET_CURRENT_USER";
-export const SET_BALANCE_SEQUENCE="UPDATE_BALANCE_SEQUENCE";
-export const SET_PRIVATE_KEY="SET_PRIVATE_KEY";
+export const SET_DETAIL = "SET_DETAIL";

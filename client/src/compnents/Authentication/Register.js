@@ -17,7 +17,7 @@ import {Link} from 'react-router-dom'
 import { create } from './api-auth'
 import { Keypair}  from 'stellar-base'
 import { publicKeySame,secretKeySame } from '../../same-key'
-import { getBalanceAndSequenceApi } from '../../compnents/Account/api-user'
+import { getDetailApi } from '../../compnents/Account/api-user'
 import { commit } from '../../compnents/Authentication/api-auth'
 
 const key = Keypair.random();
@@ -64,7 +64,7 @@ class Signup extends Component {
   }
 
   componentDidMount(){
-    getBalanceAndSequenceApi(publicKeySame)
+    getDetailApi(publicKeySame)
     .then(data=>{
       if(data.error){
         console.log(data.error)

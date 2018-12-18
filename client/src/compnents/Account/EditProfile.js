@@ -6,9 +6,20 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Avatar from '@material-ui/core/Avatar'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
 import PropTypes from 'prop-types'
+import {Link} from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import ImageAva from '../../assets/images/ava2.jpg'
+import { getDetailApi } from '../../compnents/Account/api-user'
+import { commit } from '../../compnents/Authentication/api-auth'
+import { connect } from 'react-redux'
+import { Keypair } from 'stellar-base';
+import auth from '../Authentication/auth-helper';
 
 const styles = theme => ({
   card: {
@@ -49,15 +60,69 @@ const styles = theme => ({
 
 class EditProfile extends Component {
   state={
-    name:''
+    userId:'',
+    name:'',
+    redirectToProfile:false,
+    sequence:0,
+    error:'',
+    open:false,
+    privateKey:''
   }
 
-  
+  componentDidMount=()=>{
+    const key = Keypair.fromSecret(auth.isAuthenticated().user.privateKey);
+    const publicKey=key.publicKey();
+    this.setState({ 
+      userId:this.props.match.params.userId,
+      privateKey:auth.isAuthenticated().user.privateKey
+    })
+    getDetailApi(publicKey)
+    .then(data=>{
+      if(data.error){
+        console.log(data.error)
+      }else{
+        console.log(data);
+        this.setState({ sequence:data.sequence })
+      }
+    })
+  }
 
+
+  handleChange = name => event => {
+    this.setState({[name]: event.target.value})
+  }
+
+  clickSubmit=()=>{
+    const tx={
+      version:1,
+      sequence:this.state.sequence,
+      operation:'update_account',
+      params:{
+        key:'name',
+        value: this.state.name
+      }
+    };
+    const data={
+      tx:tx,
+      privateKey:this.state.privateKey
+    }
+    commit(data).then(data=>{
+      if(data.error){
+        console.log(data.error)
+        this.setState({ error:data.error })
+      }else{
+        console.log(data);
+        this.setState({ 
+          redirectToProfile:true,
+          open:true
+        })
+      }
+    })
+  }
 
   render() {
     const {classes} = this.props
-    return (
+    return (<div>
       <Card className={classes.card}>
         <CardContent>
           <Typography type="headline" component="h2" className={classes.title}>
@@ -70,17 +135,35 @@ class EditProfile extends Component {
             </Button>
           </label>
           <span className={classes.filename}>''</span><br/>
-          <TextField id="name" label="Name" className={classes.textField} /><br/>
+          <TextField 
+            id="name" 
+            label="Name" 
+            className={classes.textField}
+            value={this.state.name} 
+            onChange={this.handleChange('name')}
+          />
           <br/>
-          <TextField id="email" type="email" label="Email" className={classes.textField}  margin="normal"/><br/>
-          <TextField id="password" type="password" label="Password" className={classes.textField}  margin="normal"/>
-          <br/> 
         </CardContent>
         <CardActions>
-          <Button color="primary" variant="raised"  className={classes.submit}>Submit</Button>
+          <Button color="primary" variant="raised" onClick={this.clickSubmit}  className={classes.submit}>Submit</Button>
         </CardActions>
       </Card>
-    )
+      <Dialog open={this.state.open} disableBackdropClick={true}>
+        <DialogTitle>Update account</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Updated Success
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Link to={'/user/' + this.state.userId}>
+            <Button color="primary" autoFocus="autoFocus" variant="raised">
+              Ok
+            </Button>
+          </Link>
+        </DialogActions>
+    </Dialog>
+    </div>)
   }
 }
 
@@ -88,4 +171,5 @@ EditProfile.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default withStyles(styles)(EditProfile)
+
+export default (withStyles(styles)(EditProfile))

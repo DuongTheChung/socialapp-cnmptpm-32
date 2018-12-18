@@ -14,10 +14,11 @@ import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import { connect } from 'react-redux'
 import { Keypair } from 'stellar-base';
-import { getBalanceAndSequenceApi } from '../../compnents/Account/api-user'
+import { getDetailApi } from '../../compnents/Account/api-user'
 import { commit } from '../../compnents/Authentication/api-auth'
 import {Link} from 'react-router-dom'
 import Icon from '@material-ui/core/Icon'
+import auth from '../Authentication/auth-helper'
 
 const styles = theme => ({
   card: {
@@ -61,23 +62,26 @@ class Payment extends Component {
   state={
     userId:'',
     address:'',
-    amount:0,
+    amount:'',
     redirectToProfile:false,
     sequence:0,
     error:'',
-    open:false
+    open:false,
+    privateKey:''
   }
 
   handleChange = name => event => {
-
     this.setState({[name]: event.target.value})
   }
 
   componentDidMount=()=>{
-    const key = Keypair.fromSecret(this.props.privateKey);
+    const key = Keypair.fromSecret(auth.isAuthenticated().user.privateKey);
     const publicKey=key.publicKey();
-    this.setState({ userId:this.props.match.params.userId })
-    getBalanceAndSequenceApi(publicKey)
+    this.setState({ 
+      userId:this.props.match.params.userId,
+      privateKey:auth.isAuthenticated().user.privateKey 
+    })
+    getDetailApi(publicKey)
     .then(data=>{
       if(data.error){
         console.log(data.error)
@@ -89,39 +93,43 @@ class Payment extends Component {
   }
 
   clickSubmit=()=>{
-
-      const amountFm=Number.parseInt(this.state.amount);
-      const tx={
-        version:1,
-        sequence:this.state.sequence,
-        operation:'payment',
-        params:{
-          address:this.state.address,
-          amount: amountFm
+    if(isNaN(this.state.amount)){
+      this.setState({ error:'Amount không chính xác' })
+    }else{
+      if(this.state.amount >  this.props.currentUser.balance){
+        this.setState({ error:'Số dư không đủ' })
+      }else{
+        const amountFm=Number.parseInt(this.state.amount);
+        const tx={
+          version:1,
+          sequence:this.state.sequence,
+          operation:'payment',
+          params:{
+            address:this.state.address,
+            amount: amountFm
+          }
+        };
+        const data={
+          tx:tx,
+          privateKey:this.state.privateKey
         }
-      };
-      const data={
-        tx:tx,
-        privateKey:this.props.privateKey
-      }
-
-      commit(data).then(data=>{
-        if(data.error){
-          console.log(data.error)
-          this.setState({ error:data.error })
-        }else{
+        commit(data).then(data=>{
           console.log(data);
-          this.setState({ 
-            redirectToProfile:true,
-            open:true
-          })
-        }
-      })
-
+          
+          if(data.error){
+            console.log(data.error)
+            this.setState({ error:data.error })
+          }else{
+            console.log(data);
+            this.setState({ 
+              redirectToProfile:true,
+              open:true
+            })
+          }
+        })
+      }
+    }
   }
-
-
-
   render() {
     const {classes } = this.props
     return (<div>
@@ -159,7 +167,7 @@ class Payment extends Component {
         </CardActions>
       </Card>
       <Dialog open={this.state.open} disableBackdropClick={true}>
-        <DialogTitle>New Account</DialogTitle>
+        <DialogTitle>Payment</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Payment Success
@@ -182,7 +190,8 @@ Payment.propTypes = {
 }
 
 const mapStateFromProps=(state)=>({
-  privateKey:state.user.currentPrivateKey
+  privateKey:state.user.currentPrivateKey,
+  currentUser:state.user.currentUser,
 });
 
 export default connect(mapStateFromProps,null)(withStyles(styles)(Payment))

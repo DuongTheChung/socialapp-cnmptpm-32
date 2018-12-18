@@ -1,5 +1,4 @@
 import * as actionTypes from '../actions/types';
-import { stat } from 'fs';
 
 const initUserState={
     listUser:[],
@@ -8,7 +7,6 @@ const initUserState={
         followers:[],
         balance:0,
         name:"",
-        publicKey:"",
         sequence:0
     },
     currentPrivateKey:""
@@ -21,38 +19,16 @@ const user_reducer=(state=initUserState,action)=>{
                 ...state,
                 listUser:action.listUser,
             }
-        case actionTypes.SET_CURRENT_USER:
-            return {
-                ...state,
-               
-                currentUser:{
-                    following:action.currentUser.following,
-                    followers:action.currentUser.followers,
-                    balance:action.currentUser.balance,
-                    name:action.currentUser.name,
-                    publicKey:action.currentUser.publicKey,
-                },
-            }
-        case actionTypes.SET_BALANCE_SEQUENCE:
-            var cur=state.currentUser;
-            cur.balance=action.currentBalanceAndSequence.balance;
-            cur.sequence=action.currentBalanceAndSequence.sequence;
+        case actionTypes.SET_DETAIL:
             return {
                 ...state,
                 currentUser:{
-                    following:cur.following,
-                    followers:cur.followers,
-                    balance:cur.balance,
-                    name:cur.name,
-                    publicKey:cur.publicKey,
-                    sequence:cur.sequence
+                    following:action.detail.following,
+                    followers:action.detail.followers,
+                    balance:action.detail.balance,
+                    name:action.detail.name,
+                    sequence:action.detail.sequence
                 },
-                    
-            }
-        case actionTypes.SET_PRIVATE_KEY:
-            return{
-                ...state,
-                currentPrivateKey:action.currentPrivateKey
             }
         default:
             return state;

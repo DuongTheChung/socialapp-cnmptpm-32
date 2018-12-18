@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom'
 import ImageAva from '../../assets/images/ava2.jpg'
 import { connect } from 'react-redux'
 import auth from '../Authentication/auth-helper'
-import { getCurrentUser , getBalanceAndSequence } from '../../actions/index'
+import { getDetail } from '../../actions/index'
 
 
 const styles = theme => ({
@@ -43,11 +43,10 @@ const styles = theme => ({
 class Profile extends Component {
   componentDidMount(){
     const userId=this.props.match.params.userId;
-    this.props.getCurrentUser(userId,auth);
-    this.props.getBalanceAndSequence(userId);
+    this.props.getDetail(userId);
   }
   render() {
-    const { classes , currentUser , privateKey }=this.props;
+    const { classes , currentUser }=this.props;
     return (
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
@@ -94,9 +93,8 @@ Profile.propTypes = {
 
 const mapStateFromProps=(state)=>({
   currentUser:state.user.currentUser,
-  privateKey:state.user.currentPrivateKey
 })
 
 
 export default connect(mapStateFromProps,
-      {getCurrentUser,getBalanceAndSequence})(withStyles(styles)(Profile))
+      {getDetail})(withStyles(styles)(Profile))
