@@ -6,7 +6,13 @@ import Typography from '@material-ui/core/Typography'
 import { Link } from 'react-router-dom'
 import GridList from '@material-ui/core/GridList'
 import GridListTile from '@material-ui/core/GridListTile'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemAvatar from '@material-ui/core/ListItemAvatar'
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import ListItemText from '@material-ui/core/ListItemText'
 import ImageAva from '../../assets/images/ava2.jpg'
+import { getDetailApi } from '../../compnents/Account/api-user'
+import { connect } from 'react-redux'
 
 const styles = theme => ({
   root: {
@@ -37,17 +43,21 @@ const styles = theme => ({
 
 class FollowGrid extends Component {
   render() {
-    const {classes} = this.props
-    return (<div className={classes.root}>
-      <GridList cellHeight={160} className={classes.gridList} cols={4}>
-            <GridListTile style={{'height':120}} >
-              <Link to="" className={classes.link}>
-                <Avatar src={ImageAva} className={classes.bigAvatar}/>
-                <Typography className={classes.tileText}>Name</Typography>
+    const {classes ,  users } = this.props;
+    console.log(users);
+    return (
+      <div className={classes.root}>
+       <GridList cellHeight={160} className={classes.gridList} cols={4}>
+       {users.map((person, i) => {
+           return  <GridListTile style={{'height':120}} key={i}>
+              <Link to={"/user/" + person._id}>
+                <Avatar src={'/api/users/photo/'+person._id} className={classes.bigAvatar}/>
+                <Typography className={classes.tileText}>{person}</Typography>
               </Link>
             </GridListTile>
+        })}
       </GridList>
-    </div>
+      </div>
     )
   }
 }

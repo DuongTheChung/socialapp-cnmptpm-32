@@ -86,7 +86,6 @@ class Payment extends Component {
       if(data.error){
         console.log(data.error)
       }else{
-        console.log(data);
         this.setState({ sequence:data.sequence })
       }
     })
@@ -113,14 +112,11 @@ class Payment extends Component {
           tx:tx,
           privateKey:this.state.privateKey
         }
-        commit(data).then(data=>{
-          console.log(data);
-          
+        commit(data).then(data=>{     
           if(data.error){
             console.log(data.error)
             this.setState({ error:data.error })
           }else{
-            console.log(data);
             this.setState({ 
               redirectToProfile:true,
               open:true

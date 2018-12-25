@@ -16,7 +16,6 @@ const isActive = (history,path) => {
   }
 }
 
-
 const Menu = withRouter(({history}) => (
   <AppBar position="static">
     <Toolbal>

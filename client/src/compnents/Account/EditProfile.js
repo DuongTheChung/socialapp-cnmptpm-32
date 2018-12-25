@@ -81,7 +81,6 @@ class EditProfile extends Component {
       if(data.error){
         console.log(data.error)
       }else{
-        console.log(data);
         this.setState({ sequence:data.sequence })
       }
     })
@@ -111,7 +110,6 @@ class EditProfile extends Component {
         console.log(data.error)
         this.setState({ error:data.error })
       }else{
-        console.log(data);
         this.setState({ 
           redirectToProfile:true,
           open:true

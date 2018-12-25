@@ -12,7 +12,7 @@ import Payment from './compnents/Account/Payment';
 
 class MainRouter extends Component {
   componentDidMount=()=>{
-    if(auth.isAuthenticated()){
+    if(auth.isAuthenticated()){;
       this.props.history.push('/');
     }
   }

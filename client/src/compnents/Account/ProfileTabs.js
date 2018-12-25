@@ -7,11 +7,14 @@ import Tab from '@material-ui/core/Tab'
 import FollowGrid from './FollowGrid'
 import PostList from '../Post/PostList'
 import { connect } from 'react-redux'
+import Transactions from './Transactions'
+import { getDetailApi } from '../../compnents/Account/api-user'
 
 class ProfileTabs extends Component {
     state = {
         tab: 0,
-        posts: []
+        posts: [],
+        followings:[]
       }
     
       componentWillReceiveProps = (props) => {
@@ -19,6 +22,21 @@ class ProfileTabs extends Component {
       }
       handleTabChange = (event, value) => {
         this.setState({ tab: value })
+      }
+      componentDidMount=()=>{
+        var a=[];
+        this.props.currentUser.followings.forEach(element => {
+          getDetailApi(element).then(data=>{
+            if(data.error){
+              console.log(data.error)
+            }else{
+              if(data.name !== "")
+                a.push(data.name);
+            }
+          })
+        });
+        console.log(a);
+        this.setState({ followings:a });
       }
     render() {
         return (
@@ -33,13 +51,13 @@ class ProfileTabs extends Component {
                     fullWidth
                 >
                     <Tab label="Posts" />
-                    <Tab label="Following" />
-                    <Tab label="Followers" />
+                    <Tab label="Followings" />
+                    <Tab label="Transaction"/>
                 </Tabs>
                 </AppBar>
             {this.state.tab === 0 && <TabContainer><PostList posts={this.props.posts} /></TabContainer>}
-            {this.state.tab === 1 && <TabContainer><FollowGrid /></TabContainer>}
-            {this.state.tab === 2 && <TabContainer><FollowGrid /></TabContainer>}
+            {this.state.tab === 1 && <TabContainer><FollowGrid users={this.state.followings} /></TabContainer>}
+            {this.state.tab === 2 && <TabContainer><Transactions /></TabContainer>}
         </div>)
   }
 }
@@ -57,7 +75,8 @@ TabContainer.propTypes = {
 }
 
 const mapStateFromProps = state => ({
-  posts: state.post.currentPosts
-});
+  posts: state.post.currentPosts,
+  currentUser:state.user.currentUser
+})
 
 export default  connect(mapStateFromProps,null)(ProfileTabs)

@@ -18,6 +18,7 @@ export const getList=(user)=>dispatch=>{
         }
     })
 }
+
 export const getDetail=(userId)=>dispatch=>{
     getUserById(userId)
         .then(data=>{
@@ -53,6 +54,7 @@ export const setList =(data)=>{
         listUser:data,
     }
 }
+
 export const setDetail=(data)=>{
     return {
         type:actionTypes.SET_DETAIL,

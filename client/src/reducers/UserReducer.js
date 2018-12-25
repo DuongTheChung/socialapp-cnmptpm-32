@@ -3,11 +3,11 @@ import * as actionTypes from '../actions/types';
 const initUserState={
     listUser:[],
     currentUser:{
-        following:[],
-        followers:[],
+        followings:[],
         balance:0,
         name:"",
-        sequence:0
+        sequence:0,
+        transactions:[],
     },
     currentPrivateKey:""
 }
@@ -23,11 +23,11 @@ const user_reducer=(state=initUserState,action)=>{
             return {
                 ...state,
                 currentUser:{
-                    following:action.detail.following,
-                    followers:action.detail.followers,
+                    followings:action.detail.followings,
                     balance:action.detail.balance,
                     name:action.detail.name,
-                    sequence:action.detail.sequence
+                    sequence:action.detail.sequence,
+                    transactions:action.detail.transactions
                 },
             }
         default:

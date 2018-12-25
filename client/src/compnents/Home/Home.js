@@ -11,6 +11,7 @@ import NewsFeed from '../Post/NewsFeed'
 import seashellImg from '../../assets/images/home.jpg';
 import { connect } from 'react-redux';
 import auth from '../Authentication/auth-helper';
+import { getDetail , getList } from '../../actions/index';
 
 
 const styles = theme => ({
@@ -39,6 +40,13 @@ class Home extends Component {
   init = () => {
     if(auth.isAuthenticated()){
       this.setState({defaultPage: false})
+      const userId=auth.isAuthenticated().user._id;
+      this.props.getDetail(userId);
+      const user={
+        _id:userId,
+        publicKeys:this.props.currentUser.followings
+      }
+      this.props.getList(user);
     }else{
       this.setState({defaultPage: true})
     }
@@ -77,7 +85,7 @@ class Home extends Component {
               <NewsFeed/>
             </Grid>
             <Grid item xs={6} sm={5}>
-              <FindPeople/>
+              <FindPeople />
             </Grid>
           </Grid>
         }
@@ -91,7 +99,8 @@ Home.propTypes = {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  currentUser:state.user.currentUser,
 });
 
-export default connect(mapStateToProps,null)(withStyles(styles)(Home))
+export default connect(mapStateToProps,{getDetail ,  getList })(withStyles(styles)(Home))

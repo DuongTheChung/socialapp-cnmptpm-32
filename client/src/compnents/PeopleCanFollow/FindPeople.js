@@ -17,6 +17,9 @@ import ViewIcon from '@material-ui/icons/Visibility'
 import { connect } from 'react-redux'
 import auth from '../Authentication/auth-helper';
 import { getPost ,getList } from '../../actions/index';
+import { getDetailApi } from '../../compnents/Account/api-user'
+import { commit } from '../../compnents/Authentication/api-auth'
+import { getDetail } from '../../actions/index'
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -42,22 +45,68 @@ const styles = theme => ({
   }
 })
 class FindPeople extends Component {
-  componentDidMount(){
-    const userId=auth.isAuthenticated().user._id;
-    const user={
-      _id:userId
-    }
-    this.props.getList(user);
+  state={
+    open:false,
+    sequence:0,
+    followMessage:'',
+    list:[]
   }
+  componentDidMount(){
+    this.setState({ 
+      list:this.props.list
+     })
+    getDetailApi(auth.isAuthenticated().user.publicKey)
+    .then(data=>{
+      if(data.error){
+        console.log(data.error)
+      }else{
+        this.setState({ sequence:data.sequence })
+      }
+    })
+  }
+
+  clickFollow=(publicKey)=>{
+    const tx={
+      version:1,
+      sequence:this.state.sequence,
+      operation:'update_account',
+      params:{
+        key:'followings',
+        addresses: publicKey
+      }
+    };
+    const data={
+      tx:tx,
+      privateKey:auth.isAuthenticated().user.privateKey
+    }
+    commit(data).then(data=>{
+      if(data.error){
+        this.setState({
+          open:true,
+          followMessage:data.error
+        })
+      }else{
+        this.setState({
+          open:true,
+          followMessage:data.msg
+        })
+      }
+    })
+  }
+
+  handleRequestClose = (event, reason) => {
+    this.setState({ open: false })
+  }
+
   render() {
-    const {classes , users} = this.props
+    const {classes , list} = this.props
     return (<div>
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
           Who to follow
         </Typography>
         <List>
-        {users.map((item, i) => {
+        {list.map((item, i) => {
               return <span key={i}>
                 <ListItem>
                   <ListItemAvatar className={classes.avatar}>
@@ -70,7 +119,7 @@ class FindPeople extends Component {
                         <ViewIcon/>
                       </IconButton>
                     </Link>
-                    <Button aria-label="Follow" variant="raised" color="primary">
+                    <Button aria-label="Follow" variant="raised" color="primary" onClick={this.clickFollow.bind(this,item.publicKey)} >
                       Follow
                     </Button>
                   </ListItemSecondaryAction>
@@ -80,13 +129,16 @@ class FindPeople extends Component {
           }
         </List>
       </Paper>
+
       <Snackbar
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'right',
           }}
+          open={this.state.open}
+          onClose={this.handleRequestClose}
           autoHideDuration={6000}
-          message={<span className={classes.snack}>Message</span>}
+          message={<span className={classes.snack}>{this.state.followMessage}</span>}
       />
     </div>)
   }
@@ -97,8 +149,9 @@ FindPeople.propTypes = {
 }
 
 const mapStateFromProps = state => ({
-  users: state.user.listUser
+    currentUser:state.user.currentUser,
+    list:state.user.listUser
 });
 
 
-export default  connect(mapStateFromProps, {getPost,getList})(withStyles(styles)(FindPeople));
+export default  connect(mapStateFromProps,null)(withStyles(styles)(FindPeople));

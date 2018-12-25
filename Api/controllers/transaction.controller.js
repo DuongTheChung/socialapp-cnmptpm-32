@@ -1,6 +1,13 @@
 let { RpcClient } = require('tendermint');
 var fetchUrl = require("fetch").fetchUrl;
 const transaction = require('../transaction/index');
+const vstruct = require('varstruct');
+const base32 = require('base32.js');
+
+
+const Followings = vstruct([
+    { name: 'addresses', type: vstruct.VarArray(vstruct.UInt16BE, vstruct.Buffer(35))},
+])
 
 
 //Khi commit cac command khac thay doi file  v1
@@ -9,10 +16,22 @@ const commit=(req,res)=>{
     console.log(txBody);
     const privateKey=req.body.privateKey;
     var params=txBody.params;
-    if(txBody.operation==='update_account'){
+
+
+    if(txBody.operation==='update_account' && params.key==='name' ){
         params={
             key:params.key,
             value:Buffer.from(params.value)
+        }
+    }else{
+        if(txBody.operation==='update_account' && params.key === 'followings'){
+            const value={
+                addresses:[base32.decode(params.addresses)]
+            }
+            params={
+                key:params.key,
+                value:Followings.encode(value)
+            }
         }
     }
     const tx={
@@ -55,17 +74,19 @@ const getDetail=(req,res)=>{
     const publicKey=req.params.publickey;
     const a=[];
     const b=[];
+    const c=[];
+    const d=[];
+    const e=[];
+    var followings=[];
     var balance=0;
     var sequence=0;
     var name='';
-    var following = [];
-    var followers =[];
 
-    var Url="https://komodo.forest.network/tx_search?query=%22account=%27"+publicKey+"%27%22";
+    var Url="https://zebra.forest.network/tx_search?query=%22account=%27"+publicKey+"%27%22";
         fetchUrl(Url, function(error, meta, body){
         
         var TotalCount=JSON.parse(body.toString()).result.total_count;
-        var url="https://komodo.forest.network/tx_search?query=%22account=%27"+ publicKey +"%27%22&per_page=%22"+TotalCount+"%22";
+        var url="https://zebra.forest.network/tx_search?query=%22account=%27"+ publicKey +"%27%22&per_page=%22"+TotalCount+"%22";
         fetchUrl(url, function(error, meta, body){
             if(error){
                 res.status(400).json({
@@ -97,14 +118,31 @@ const getDetail=(req,res)=>{
             b.forEach(element => {
                 if(element.operation==='update_account' && element.params.key==='name'){
                    name=element.params.value.toString('utf-8');
+                }else{
+                    if(element.operation==='update_account' && element.params.key==='followings'){
+                        c.push( Followings.decode(element.params.value).addresses);
+                    }
+
                 }
             })
+            if(c.length !== 0){
+                c.forEach(element=>{
+                    d.push(element)
+                })
+
+                d.forEach(element=>{
+                    element.forEach(e=>{
+                        followings.push(base32.encode(e))
+                    })
+                })
+            }
+
             const data={
                 balance:balance,
                 sequence:sequence,
                 name:name,
-                followers:followers,
-                following:following
+                followings:followings,
+                transactions:b
             }
             res.json(data);
         });
@@ -112,7 +150,9 @@ const getDetail=(req,res)=>{
 }
 
 
+
 module.exports={
     commit,
     getDetail
 }
+

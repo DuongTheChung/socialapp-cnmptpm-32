@@ -40,8 +40,10 @@ const create=(req, res, next)=>{
 }
 const list =(req,res)=>{
   const userId=req.body._id;
-  User.find({ _id: { $nin : userId } },(err, users)=>{
+  const publicKeys=req.body.publicKeys;
+  User.find({ _id: { $nin : userId } ,publicKey:{ $nin: publicKeys} },(err, users)=>{
     if(err){
+      
       return res.status(400).json({
         error:errorHandler.getErrorMessage(err)
       })

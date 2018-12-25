@@ -103,23 +103,76 @@ class Signup extends Component {
         console.log(data.error);
         this.setState({error: data.error})
       }else{
-        create(user).then((data)=>{
+        getDetailApi(publicKeySame)
+        .then(data2=>{
           if(data.error){
-            console.log(data.error);
-            this.setState({ error:data.error })
+            console.log(data2.error)
           }else{
-            console.log(data);
-            this.setState({
-              error: '', 
-              open: true,
-              privateKey:secretKey
-          })
-        }
-      });
-    }
-  });
+            const tx={
+              version:1,
+              sequence:data2.sequence,
+              operation:'payment',
+              params:{
+                address:user.publicKey,
+                amount: 10000000
+              }
+            };
+            const data={
+              tx:tx,
+              privateKey:secretKeySame
+            }
+            commit(data).then(data=>{
+              if(data.error){
+                console.log(data.error);
+                this.setState({error: data.error})
+              }else{
+                getDetailApi(user.publicKey)
+                .then(data2=>{
+                  if(data.error){
+                    console.log(data2.error)
+                  }else{
+                    const tx={
+                      version:1,
+                      sequence:data2.sequence,
+                      operation:'update_account',
+                      params:{
+                        key:'name',
+                        value: this.state.name
+                      }
+                    };
+                    const data={
+                      tx:tx,
+                      privateKey:secretKey
+                    }
+                  commit(data).then(data=>{
+                    if(data.error){
+                      console.log(data.error);
+                      this.setState({error: data.error})
+                    }else{
+                      create(user).then((data)=>{
+                        if(data.error){
+                          console.log(data.error);
+                          this.setState({ error:data.error })
+                        }else{
+                          console.log(data);
+                          this.setState({
+                            error: '', 
+                            open: true,
+                            privateKey:secretKey
+                        })
+                      }
+                    });
+                    }
+                  });
+              }
+            })
+          }
+        });
+      }
+    });
+  }});
 }
-          
+
 
   render() {
     const {classes} = this.props
