@@ -16,10 +16,9 @@ import Snackbar from '@material-ui/core/Snackbar'
 import ViewIcon from '@material-ui/icons/Visibility'
 import { connect } from 'react-redux'
 import auth from '../Authentication/auth-helper';
-import { getPost ,getList } from '../../actions/index';
 import { getDetailApi } from '../../compnents/Account/api-user'
 import { commit } from '../../compnents/Authentication/api-auth'
-import { getDetail } from '../../actions/index'
+import { getDetail , getList } from '../../actions/index'
 
 const styles = theme => ({
   root: theme.mixins.gutters({
@@ -48,13 +47,15 @@ class FindPeople extends Component {
   state={
     open:false,
     sequence:0,
-    followMessage:'',
-    list:[]
+    followMessage:''
   }
   componentDidMount(){
-    this.setState({ 
-      list:this.props.list
-     })
+    this.props.getDetail(auth.isAuthenticated().user._id);
+    const user={
+      _id:auth.isAuthenticated().user._id,
+      publicKeys:this.props.currentUser.followings
+    }
+    this.props.getList(user);
     getDetailApi(auth.isAuthenticated().user.publicKey)
     .then(data=>{
       if(data.error){
@@ -63,6 +64,7 @@ class FindPeople extends Component {
         this.setState({ sequence:data.sequence })
       }
     })
+
   }
 
   clickFollow=(publicKey)=>{
@@ -99,7 +101,8 @@ class FindPeople extends Component {
   }
 
   render() {
-    const {classes , list} = this.props
+    const {classes , list } = this.props;
+    console.log(list);
     return (<div>
       <Paper className={classes.root} elevation={4}>
         <Typography type="title" className={classes.title}>
@@ -154,4 +157,4 @@ const mapStateFromProps = state => ({
 });
 
 
-export default  connect(mapStateFromProps,null)(withStyles(styles)(FindPeople));
+export default  connect(mapStateFromProps,{getDetail,getList})(withStyles(styles)(FindPeople));

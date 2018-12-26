@@ -12,6 +12,8 @@ import { Redirect } from 'react-router-dom'
 import { signin } from '../Authentication/api-auth'
 import auth from '../Authentication/auth-helper' 
 import { Keypair } from 'stellar-base';
+import { getDetail } from '../../actions/index';
+import { connect } from 'react-redux';
 
 const styles = theme => ({
   card: {
@@ -81,6 +83,7 @@ clickSubmit = () => {
       } else {
         auth.authenticate(data, () => {
           this.setState({redirectToReferrer: true});
+          this.props.getDetail(data.user._id);
         })
       }
     })
@@ -133,4 +136,4 @@ Signin.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-export default (withStyles(styles)(Signin))
+export default connect(null,{getDetail})(withStyles(styles)(Signin))

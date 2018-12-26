@@ -2,7 +2,6 @@ const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 const expressJwt = require('express-jwt');
 const config = require('../config/keys');
-const transaction = require('../transaction/index');
 
 const signin = (req, res) => {
     const privateKey=req.body.privateKey;

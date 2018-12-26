@@ -56,6 +56,11 @@ const styles = theme => ({
 })
 
 class NewPost extends Component {
+  state={
+    text:'',
+    user:{}
+  }
+
   render() {
     const {classes} = this.props
     return (<div className={classes.root}>

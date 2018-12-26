@@ -1,9 +1,6 @@
-var fetchUrl = require("fetch").fetchUrl;
 const User = require('../models/user.model');
 const _ = require('lodash');
 const errorHandler = require('../helpers/dbErrorHandler');
-const formidable = require('formidable');
-const fs = require('fs');
 
 
 const create=(req, res, next)=>{

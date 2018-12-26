@@ -18,7 +18,6 @@ export const getList=(user)=>dispatch=>{
         }
     })
 }
-
 export const getDetail=(userId)=>dispatch=>{
     getUserById(userId)
         .then(data=>{

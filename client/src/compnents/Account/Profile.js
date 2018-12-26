@@ -50,7 +50,7 @@ class Profile extends Component {
     completed: 0,
   };
 
-  componentDidMount(){
+  componentDidMount=()=>{
     setTimeout(() => this.setState({ loading: false }), 1500);
     this.timer = setInterval(this.progress, 20);
     const userId=this.props.match.params.userId;
@@ -65,20 +65,18 @@ class Profile extends Component {
     const { completed } = this.state;
     this.setState({ completed: completed >= 100 ? 0 : completed + 1 });
   };
-
   render() {
     const { classes , currentUser }=this.props;
     const { loading } = this.state;
-    return (
-      <div>
-        {loading &&
-          <CircularProgress
-            className={classes.progress}
-            variant="determinate"
-            value={this.state.completed}
-          />
-        }
-        {!loading &&
+    return (<div>
+      {loading &&
+        <CircularProgress
+          className={classes.progress}
+          variant="determinate"
+          value={this.state.completed}
+        />
+      }
+      {!loading &&
         <Paper className={classes.root} elevation={4}>
           <Typography type="title" className={classes.title}>
             Profile
@@ -114,8 +112,8 @@ class Profile extends Component {
           </List>
         <ProfileTabs  />
         </Paper>
-      }
-    </div>
+        }
+        </div>
     )
   }
 }

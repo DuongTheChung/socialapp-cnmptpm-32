@@ -9,9 +9,9 @@ import Grid from '@material-ui/core/Grid'
 import FindPeople from '../PeopleCanFollow/FindPeople'
 import NewsFeed from '../Post/NewsFeed'
 import seashellImg from '../../assets/images/home.jpg';
-import { connect } from 'react-redux';
 import auth from '../Authentication/auth-helper';
-import { getDetail , getList } from '../../actions/index';
+import { getDetail , getList } from '../../actions/index'
+import { connect } from 'react-redux'
 
 
 const styles = theme => ({
@@ -40,10 +40,8 @@ class Home extends Component {
   init = () => {
     if(auth.isAuthenticated()){
       this.setState({defaultPage: false})
-      const userId=auth.isAuthenticated().user._id;
-      this.props.getDetail(userId);
       const user={
-        _id:userId,
+        _id:auth.isAuthenticated().user._id,
         publicKeys:this.props.currentUser.followings
       }
       this.props.getList(user);
@@ -98,9 +96,10 @@ Home.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
-const mapStateToProps = state => ({
-  auth: state.auth,
+
+const mapStateFromProps = state => ({
   currentUser:state.user.currentUser,
+  list:state.user.listUser
 });
 
-export default connect(mapStateToProps,{getDetail ,  getList })(withStyles(styles)(Home))
+export default connect(mapStateFromProps,{getDetail,getList})(withStyles(styles)(Home));

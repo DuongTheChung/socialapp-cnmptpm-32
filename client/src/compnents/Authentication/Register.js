@@ -163,7 +163,7 @@ class Signup extends Component {
                       }
                     });
                     }
-                  });
+                });
               }
             })
           }
